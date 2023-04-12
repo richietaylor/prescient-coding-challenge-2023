@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/129489716/231561818-0df234ac-a574-4af9-b33c-f0c1acc1c458.png)
+![image](./header.png)
 
 # Prescient Coding Challenge 2023
 

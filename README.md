@@ -11,4 +11,4 @@ Get a preview of some of the content and skills required to be a successful quan
 ## Details
 
 - Sign up details coming soon
-- Content to be released on event day
+- Content to be released on event day - 5 August 2023

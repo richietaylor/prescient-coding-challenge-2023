@@ -9,7 +9,7 @@ Join us at our showcase day at UCT where our Data Science and Quantitative Analy
 - When: Monday, 24 April 2023, @13:00pm 
 - Where: Leslie Social 3A
 
-You’ll also get a sneak preview of the Prescient Coding Challenge we will be running on Campus in August 2023. Through this exciting coding competition, you will be challenged and tested – the winning team will receive the main prize of two MacBook Pros. 
+You’ll also get a sneak preview of the Prescient Coding Challenge we will be running on Campus in August 2023. Through this exciting coding competition, you will be challenged and tested – the winning team will receive the main prize of two MacBook Airs. 
 
 ## Coding Challenge Details
 

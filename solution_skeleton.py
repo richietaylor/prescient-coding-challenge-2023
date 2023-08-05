@@ -12,8 +12,8 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # ...
 # ETS-based prediction strategy
-def predict_return(stock, df_latest, trend, damped_trend, seasonal, seasonal_periods):
-    model = ExponentialSmoothing(df_latest[stock], trend=trend, damped_trend=damped_trend, seasonal=seasonal, seasonal_periods=seasonal_periods)
+def predict_return(stock, df_latest, trend, damped_trend):
+    model = ExponentialSmoothing(df_latest[stock], trend=trend, damped_trend=damped_trend)
     model_fit = model.fit()
     predicted_return = model_fit.predict(start=len(df_latest), end=len(df_latest))
     return predicted_return.iloc[0]
@@ -103,7 +103,7 @@ def generate_portfolio(df_train: pd.DataFrame, df_test: pd.DataFrame):
         # Fit the ETS model and make predictions for each stock
         for stock in list_stocks:
             print(f"Processing {stock}...")
-            predicted_return = predict_return(stock, df_latest, trend='add', damped_trend=True, seasonal='mul', seasonal_periods=12)
+            predicted_return = predict_return(stock, df_latest, trend='add', damped_trend=True)
             predicted_returns[stock] = predicted_return
 
         # Sort the stocks by their predicted returns

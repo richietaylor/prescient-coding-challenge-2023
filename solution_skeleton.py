@@ -13,18 +13,11 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 # ...
 # ETS-based prediction strategy
 def predict_return(stock, df_latest, trend, damped_trend):
-    model = ExponentialSmoothing(df_latest[stock], trend=trend, damped_trend=damped_trend,seasonal_periods=4,seasonal="add")
+    model = ExponentialSmoothing(df_latest[stock], trend=trend, damped_trend=damped_trend)
     model_fit = model.fit()
     predicted_return = model_fit.predict(start=len(df_latest), end=len(df_latest))
     return predicted_return.iloc[0]
 
-
-def predict_return_helper(args):
-    stock, df_latest, trend, damped_trend = args
-    model = ExponentialSmoothing(df_latest[stock], trend=trend, damped_trend=damped_trend)
-    model_fit = model.fit()
-    predicted_return = model_fit.predict(start=len(df_latest), end=len(df_latest))
-    return stock, predicted_return.iloc[0]
 
 print('---Python script Start---', str(datetime.datetime.now()))
 
@@ -108,10 +101,10 @@ def generate_portfolio(df_train: pd.DataFrame, df_test: pd.DataFrame):
         predicted_returns = {}
 
         # Fit the ETS model and make predictions for each stock
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            args = [(stock, df_latest, 'add', True) for stock in list_stocks]
-            results = executor.map(predict_return_helper, args)
-            predicted_returns = {stock: predicted_return for stock, predicted_return in results}
+        for stock in list_stocks:
+            print(f"Processing {stock}...")
+            predicted_return = predict_return(stock, df_latest, trend='add', damped_trend=True)
+            predicted_returns[stock] = predicted_return
 
         # Sort the stocks by their predicted returns
         sorted_stocks = sorted(predicted_returns, key=predicted_returns.get, reverse=True)
@@ -195,10 +188,10 @@ def plot_total_return(df_returns: pd.DataFrame, df_weights_index: pd.DataFrame, 
 
 
 
-if __name__ == '__main__':
-    # running solution
-    df_returns = pd.concat(objs=[df_returns_train, df_returns_test], ignore_index=True)
-    df_weights_index = equalise_weights(df_returns)
-    df_returns, df_weights_portfolio = generate_portfolio(df_returns_train, df_returns_test)
-    fig1, df_rtn = plot_total_return(df_returns, df_weights_index=df_weights_index, df_weights_portfolio=df_weights_portfolio)
-    fig1.show()
+
+# running solution
+df_returns = pd.concat(objs=[df_returns_train, df_returns_test], ignore_index=True)
+df_weights_index = equalise_weights(df_returns)
+df_returns, df_weights_portfolio = generate_portfolio(df_returns_train, df_returns_test)
+fig1, df_rtn = plot_total_return(df_returns, df_weights_index=df_weights_index, df_weights_portfolio=df_weights_portfolio)
+fig1.show()

@@ -1,3 +1,0 @@
-Our first instict was to classify stocks in sectors, however this was not successful, the failed attempt can be see in the Guess Sector directory.
-
-Next, we tried using a machine learning models to make decisions better, first trying an ARIMA (autoregressive integrated moving average) model, getting a result of 476, but later tried ETS (simple exponential smoothing), getting us to 514.

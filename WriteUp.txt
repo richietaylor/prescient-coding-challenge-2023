@@ -1,0 +1,7 @@
+Our first instict was to classify stocks in sectors, however this was not successful, the failed attempt can be see in the Guess Sector directory.
+
+Next, we tried using a machine learning models to make decisions better, first trying an ARIMA (autoregressive integrated moving average) model, getting a result of 476, but later tried ETS (simple exponential smoothing), getting us to 514.
+
+From there it was a bit of fettling to optimise the model futher (result 654). We noticed our model was aggressive thus peaked high (925 at one point!), but also suffered terribly during market shocks, so we tried to get it to play more conserevitive during said market shocks.
+
+We put the model in parallel for speedup benefits.

@@ -170,4 +170,4 @@ df_returns = pd.concat(objs=[df_returns_train, df_returns_test], ignore_index=Tr
 df_weights_index = equalise_weights(df_returns)
 df_returns, df_weights_portfolio = generate_portfolio(df_returns_train, df_returns_test)
 fig1, df_rtn = plot_total_return(df_returns, df_weights_index=df_weights_index, df_weights_portfolio=df_weights_portfolio)
-fig1
+fig1.show()

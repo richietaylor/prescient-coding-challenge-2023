@@ -1,4 +1,4 @@
-![img](img/header.png)
+![img](header.png)
 
 # Welcome!
 

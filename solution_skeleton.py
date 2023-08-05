@@ -2,7 +2,21 @@
 import numpy as np
 import pandas as pd
 import datetime
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_squared_error
+from concurrent.futures import ProcessPoolExecutor
 import plotly.express as px
+import concurrent.futures
+
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+# ...
+# ETS-based prediction strategy
+def predict_return(stock, df_latest, trend, damped_trend, seasonal, seasonal_periods):
+    model = ExponentialSmoothing(df_latest[stock], trend=trend, damped_trend=damped_trend, seasonal=seasonal, seasonal_periods=seasonal_periods)
+    model_fit = model.fit()
+    predicted_return = model_fit.predict(start=len(df_latest), end=len(df_latest))
+    return predicted_return.iloc[0]
 
 
 print('---Python script Start---', str(datetime.datetime.now()))
@@ -76,30 +90,36 @@ def generate_portfolio(df_train: pd.DataFrame, df_test: pd.DataFrame):
 
     # <<--------------------- YOUR CODE GOES BELOW THIS LINE --------------------->>
 
-    # This is your playground. Delete/modify any of the code here and replace with 
-    # your methodology. Below we provide a simple, naive estimation to illustrate 
-    # how we think you should go about structuring your submission and your comments:
-
-    # We use a static Inverse Volatility Weighting (https://en.wikipedia.org/wiki/Inverse-variance_weighting) 
-    # strategy to generate portfolio weights.
-    # Use the latest available data at that point in time
     
+    # ARIMA-based prediction strategy
+    # Loop through the test set
     for i in range(len(df_test)):
-
-        # latest data at this point
+        # Get the data up to the current month in the test set
         df_latest = df_returns[(df_returns['month_end'] < df_test.loc[i, 'month_end'])]
-                
-        # vol calc
-        df_w = pd.DataFrame()
-        df_w['vol'] = df_latest.std(numeric_only=True)          # calculate stock volatility
-        df_w['inv_vol'] = 1/df_w['vol']                         # calculate the inverse volatility
-        df_w['tot_inv_vol'] = df_w['inv_vol'].sum()             # calculate the total inverse volatility
-        df_w['weight'] = df_w['inv_vol']/df_w['tot_inv_vol']    # calculate weight based on inverse volatility
-        df_w.reset_index(inplace=True, names='name')
 
-        # add to all weights
-        df_this = pd.DataFrame(data=[[df_test.loc[i, 'month_end']] + df_w['weight'].to_list()], columns=df_latest.columns)
+        # Initialize a dictionary to store the predicted returns
+        predicted_returns = {}
+
+        # Fit the ETS model and make predictions for each stock
+        for stock in list_stocks:
+            print(f"Processing {stock}...")
+            predicted_return = predict_return(stock, df_latest, trend='add', damped_trend=True, seasonal='mul', seasonal_periods=12)
+            predicted_returns[stock] = predicted_return
+
+        # Sort the stocks by their predicted returns
+        sorted_stocks = sorted(predicted_returns, key=predicted_returns.get, reverse=True)
+
+        # Select the top N stocks with the highest predicted returns
+        N = 10  # adjust this parameter as needed
+        top_stocks = sorted_stocks[:N]
+
+        # Assign equal weights to the top stocks and zero weight to the other stocks
+        weights = [1/N if stock in top_stocks else 0 for stock in list_stocks]
+
+        # Add the current weights to the DataFrame
+        df_this = pd.DataFrame(data=[[df_test.loc[i, 'month_end']] + weights], columns=df_latest.columns)
         df_weights = pd.concat(objs=[df_weights, df_this], ignore_index=True)
+
     
     # <<--------------------- YOUR CODE GOES ABOVE THIS LINE --------------------->>
     
@@ -164,6 +184,10 @@ def plot_total_return(df_returns: pd.DataFrame, df_weights_index: pd.DataFrame, 
     return fig1, df_rtn
 
 # %%
+
+
+
+
 
 # running solution
 df_returns = pd.concat(objs=[df_returns_train, df_returns_test], ignore_index=True)
